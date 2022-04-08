@@ -55,7 +55,7 @@ def get_predictions(model, texts):
 def main():
 
     # Load dataset
-    data = pd.read_csv(data_path)
+    data = pd.read_csv(data_path,encoding='latin-1')
     observations = len(data.index)
     # print("Dataset Size: {}".format(observations))
 
