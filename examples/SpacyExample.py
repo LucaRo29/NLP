@@ -11,7 +11,7 @@ from sklearn.metrics import confusion_matrix
 from matplotlib import pyplot as plt
 
 ## Paths
-data_path = "../inputs/spam.csv"
+data_path = "../data/spam.csv"
 
 ## Configurations
 sns.set(style="darkgrid")
