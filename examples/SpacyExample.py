@@ -116,11 +116,12 @@ def main():
     cf_train_matrix = confusion_matrix(y_train, train_predictions)
     plt.figure(figsize=(10,8))
     sns.heatmap(cf_train_matrix, annot=True, fmt='d')
+    plt.show()
 
     cf_test_matrix = confusion_matrix(y_test, test_predictions)
     plt.figure(figsize=(10,8))
     sns.heatmap(cf_test_matrix, annot=True, fmt='d')
-
+    plt.show()
 
 if __name__ == "__main__":
     main()
