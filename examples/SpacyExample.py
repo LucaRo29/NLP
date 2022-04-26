@@ -16,6 +16,7 @@ data_path = "../data/spam.csv"
 ## Configurations
 sns.set(style="darkgrid")
 
+
 ## UDF's
 def train_model(model, train_data, optimizer, batch_size, epochs=10):
     losses = {}
@@ -35,6 +36,7 @@ def train_model(model, train_data, optimizer, batch_size, epochs=10):
 
     return losses['textcat']
 
+
 def get_predictions(model, texts):
     # Use the model's tokenizer to tokenize each input text
     docs = [model.tokenizer(text) for text in texts]
@@ -51,11 +53,10 @@ def get_predictions(model, texts):
 
 
 ######## Main method ########
-
 def main():
 
     # Load dataset
-    data = pd.read_csv(data_path,encoding='latin-1')
+    data = pd.read_csv(data_path)
     observations = len(data.index)
     # print("Dataset Size: {}".format(observations))
 
