@@ -11,7 +11,8 @@ from sklearn.metrics import confusion_matrix
 from matplotlib import pyplot as plt
 
 ## Paths
-data_path = "../data/spam.csv"
+#data_path = "../data/spam.csv"
+data_path = "../data/spam_preprocessed.csv"
 
 ## Configurations
 sns.set(style="darkgrid")
@@ -59,6 +60,9 @@ def main():
     data = pd.read_csv(data_path)
     observations = len(data.index)
     # print("Dataset Size: {}".format(observations))
+
+    data.text = data.text.fillna('')
+
 
     # Create an empty spacy model
     nlp = spacy.blank("en")
@@ -126,3 +130,17 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+#RESULT:
+'''
+spam.csv
+    Train accuracy: 0.999196356817573
+    Test accuracy: 0.9809679173463839
+
+spam_preprocessed.csv: 
+    Train accuracy: 0.998392713635146
+    Test accuracy: 0.9885869565217391
+    
+    --> Train accuracy is lower but test accuracy increased by 0.008 
+'''
