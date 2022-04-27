@@ -12,30 +12,31 @@ from preprocessing import Preprocess
 
 #Available preprocessing techniques
 """
-	lcc = lower case conversion
-	rht = Removing HTML tags
-	rurls = Removing Urls
-	rn = Removing Numbers
-	ntw = convert numbers to words
-	sc = Spelling Correction
-	ata = convert accented to ASCII code
-	sto = short_to_original
-	ec = Expanding Contractions
-	ps = Stemming (Porter Stemming)
-	l = Lemmatization
-	re = Removing Emojis
-	ret = Removing Emoticons
-	ew = Convert Emojis to words
-	etw = Convert Emoticons to words
-	rp = Removing Punctuations
-	rs = Removing Stopwords
-	rfw = Removing Frequent Words
-	rrw = Removing Rare Words
-	rsc = Removing Single characters
-	res = Removing Extra Spaces
+    lcc = lower case convertion
+rht = Removing HTML tags
+rurls = Revoing Urls 
+rn = Removing Numbers
+    ntw = convert numbers to words
+    sc = Spelling Correction
+    ata = convert accented to ASCII code
+    sto = short_to_original
+ec = Expanding Contractions
+    ps = Stemming (Porter Stemming)
+    l = Lemmatization
+re = Removing Emojis
+ret = Removing Emoticons
+ew = Convert Emojis to words
+etw = Convert Emoticons to words
+    rp = Removing Punctuations
+    rs = Removing Stopwords
+rfw = Removing Frequent Words
+rrw = Removing Rare Words
+rsc = Removing Single characters
+    res = Removing Extra Spaces
 """
-techniques = ["lcc", "rurls"]
 
+techniques = ["lcc", "ntw", "rp", "res", "sto", "ata",   "sc", "rs", "ps", "l"]
+#techniques = ["lcc", "ntw"]
 
 # Load dataset
 data_path = "../data/spam.csv"
