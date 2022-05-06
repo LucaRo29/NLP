@@ -12,6 +12,7 @@ data_path = "../data/spam.csv"
 # We can train the model by executing in the shell
 # '$python -m spacy train config.cfg --verbose  --output ./output_updated'
 ###
+
 def main():
     # Load dataset
     df = pd.read_csv(data_path, encoding='latin-1')
