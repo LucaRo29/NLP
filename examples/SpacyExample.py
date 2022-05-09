@@ -125,11 +125,13 @@ def get_predictions(model, texts):
 #
 
 ######## Main method ########
-
 def main():
     # Load dataset
-    df = pd.read_csv(data_path, encoding='latin-1')
-    # observations = len(data.index)
+
+    
+    #df = pd.read_csv(data_path, encoding='latin-1')
+    data = pd.read_csv(data_path)
+    observations = len(data.index)
     # print("Dataset Size: {}".format(observations))
 
     # nlp = spacy.blank("en")
