@@ -144,7 +144,7 @@ def main():
     # observations = len(df.index)
     # print("Dataset Size: {}".format(observations))
 
-    # data.text = data.text.fillna('') # needed if preprocessing is used
+    # df.text = df.text.fillna('') # needed if preprocessing is used
 
 
     # nlp = spacy.blank("en")
@@ -204,27 +204,28 @@ def main():
     # Create an empty spacy model
 
     # Create the TextCategorizer with exclusive classes and "bow" architecture
-    # config = {"model": {"@architectures": "spacy.TextCatBOW.v2", "exclusive_classes": "true", "ngram_size": 1,
-    #                     "no_output_layer": "false"}}
-    # text_cat = nlp.add_pipe("textcat", config=config)
-    # text_cat.add_label('ham')
-    # text_cat.add_label('spam')
+    config = {"model": {"@architectures": "spacy.TextCatBOW.v2", "exclusive_classes": "true", "ngram_size": 1,
+                         "no_output_layer": "false"}}
+
+    text_cat = nlp.add_pipe("textcat", config=config)
+    text_cat.add_label('ham')
+    text_cat.add_label('spam')
 
     # Adding the TextCategorizer to the created empty model
-    # nlp.add_pipe('text_cat')
+    # nlp.add_pipe('text_cat')  #TODO: FIX ERROR:  Can't find factory for 'text_cat' for language English (en)
 
     # Add labels to text classifier
     # nlp.add_label("ham")
     # nlp.add_label("spam")
 
     # Split data into train and test datasets
-    # x_train, x_test, y_train, y_test = train_test_split(
-    #     data['text'], data['label'], test_size=0.33, random_state=7)
-    #
-    # # Create the train and test data for the spacy model
-    # train_lables = [{'cats': {'ham': label == 'ham',
+    #x_train, x_test, y_train, y_test = train_test_split(
+    #     df['text'], df['label'], test_size=0.33, random_state=7)       #TODO: was it correct to replace variable data with df ?!
+
+    # Create the train and test data for the spacy model
+    #train_lables = [{'cats': {'ham': label == 'ham',
     #                           'spam': label == 'spam'}} for label in y_train]
-    # test_lables = [{'cats': {'ham': label == 'ham',
+    #test_lables = [{'cats': {'ham': label == 'ham',
     #                          'spam': label == 'spam'}} for label in y_test]
 
     # Spacy model data
@@ -233,8 +234,8 @@ def main():
 
     # Model configurations
     # optimizer = nlp.begin_training()
-    batch_size = 5
-    epochs = 10
+    # batch_size = 5
+    # epochs = 10
 
     # Training the model
     # train_model(nlp, train_data, optimizer, batch_size, epochs)
