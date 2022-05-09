@@ -10,6 +10,16 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 from matplotlib import pyplot as plt
 import datetime
+import timeit
+import time
+
+#---------------------------------------------------------------------#
+#---------------------------------------------------------------------#
+#---------------------------------------------------------------------#
+#---------------------USE SPACY VERSION: 3.X !------------------------#
+#---------------------------------------------------------------------#
+#---------------------------------------------------------------------#
+#---------------------------------------------------------------------#
 
 ## Paths
 data_path = "../data/spam.csv"
@@ -127,11 +137,10 @@ def get_predictions(model, texts):
 ######## Main method ########
 def main():
     # Load dataset
-
     
     #df = pd.read_csv(data_path, encoding='latin-1')
-    data = pd.read_csv(data_path)
-    observations = len(data.index)
+    df = pd.read_csv(data_path)
+    # observations = len(df.index)
     # print("Dataset Size: {}".format(observations))
 
     # nlp = spacy.blank("en")
@@ -161,7 +170,7 @@ def main():
 
         return text
 
-    # start_time = datetime.time
+    start_time = time.time()
 
     # passing the train dataset into function 'document'
     train_docs = document(train)
@@ -171,21 +180,21 @@ def main():
 
     # Saving the binary document as train.spacy
     doc_bin.to_disk("train.spacy")
-    # end_time = datetime.time
+    end_time = time.time()
 
     # Printing the time duration for train dataset
-    # print('Duration: {}'.format(end_time - start_time))
+    print('Duration: {} seconds'.format(end_time - start_time))
 
-    # start_time = datetime.time
+    start_time = time.time()
 
     # passing the test dataset into function 'document'
     test_docs = document(test)
     doc_bin = DocBin(docs=test_docs)
     doc_bin.to_disk("valid.spacy")
-    # end_time = datetime.now()
+    end_time = time.time()
 
     # Printing the time duration for test dataset
-    # print('Duration: {}'.format(end_time - start_time))
+    print('Duration: {} seconds'.format(end_time - start_time))
 
     # Create an empty spacy model
 
