@@ -4,7 +4,7 @@ import pandas as pd
 
 from examples.SpacyExample import data_path
 
-data_path = "../data/spam.csv"
+data_path = "data/spam.csv"
 
 
 ###
@@ -16,6 +16,7 @@ data_path = "../data/spam.csv"
 def main():
     # Load dataset
     df = pd.read_csv(data_path, encoding='latin-1')
+    #df = pd.read_csv(data_path)
 
     # nlp = spacy.blank("en")
     nlp = spacy.load("en_core_web_sm")

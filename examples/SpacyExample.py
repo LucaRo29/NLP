@@ -10,9 +10,20 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 from matplotlib import pyplot as plt
 import datetime
+import timeit
+import time
+
+#---------------------------------------------------------------------#
+#---------------------------------------------------------------------#
+#---------------------------------------------------------------------#
+#---------------------USE SPACY VERSION: 3.X !------------------------#
+#---------------------------------------------------------------------#
+#---------------------------------------------------------------------#
+#---------------------------------------------------------------------#
 
 ## Paths
 data_path = "../data/spam.csv"
+#data_path = "../data/spam_preprocessed.csv"
 
 ## Configurations
 sns.set(style="darkgrid")
@@ -127,12 +138,14 @@ def get_predictions(model, texts):
 ######## Main method ########
 def main():
     # Load dataset
-
     
-    #df = pd.read_csv(data_path, encoding='latin-1')
-    data = pd.read_csv(data_path)
-    observations = len(data.index)
+    df = pd.read_csv(data_path, encoding='latin-1')
+    #df = pd.read_csv(data_path)
+    # observations = len(df.index)
     # print("Dataset Size: {}".format(observations))
+
+    # df.text = df.text.fillna('') # needed if preprocessing is used
+
 
     # nlp = spacy.blank("en")
     nlp = spacy.load("en_core_web_sm")
@@ -161,7 +174,7 @@ def main():
 
         return text
 
-    # start_time = datetime.time
+    start_time = time.time()
 
     # passing the train dataset into function 'document'
     train_docs = document(train)
@@ -171,46 +184,48 @@ def main():
 
     # Saving the binary document as train.spacy
     doc_bin.to_disk("train.spacy")
-    # end_time = datetime.time
+    end_time = time.time()
 
     # Printing the time duration for train dataset
-    # print('Duration: {}'.format(end_time - start_time))
+    print('Duration: {} seconds'.format(end_time - start_time))
 
-    # start_time = datetime.time
+    start_time = time.time()
 
     # passing the test dataset into function 'document'
     test_docs = document(test)
     doc_bin = DocBin(docs=test_docs)
     doc_bin.to_disk("valid.spacy")
-    # end_time = datetime.now()
+    end_time = time.time()
 
     # Printing the time duration for test dataset
-    # print('Duration: {}'.format(end_time - start_time))
+    print('Duration: {} seconds'.format(end_time - start_time))
+
 
     # Create an empty spacy model
 
     # Create the TextCategorizer with exclusive classes and "bow" architecture
-    # config = {"model": {"@architectures": "spacy.TextCatBOW.v2", "exclusive_classes": "true", "ngram_size": 1,
-    #                     "no_output_layer": "false"}}
-    # text_cat = nlp.add_pipe("textcat", config=config)
-    # text_cat.add_label('ham')
-    # text_cat.add_label('spam')
+    config = {"model": {"@architectures": "spacy.TextCatBOW.v2", "exclusive_classes": "true", "ngram_size": 1,
+                         "no_output_layer": "false"}}
+
+    text_cat = nlp.add_pipe("textcat", config=config)
+    text_cat.add_label('ham')
+    text_cat.add_label('spam')
 
     # Adding the TextCategorizer to the created empty model
-    # nlp.add_pipe('text_cat')
+    # nlp.add_pipe('text_cat')  #TODO: FIX ERROR:  Can't find factory for 'text_cat' for language English (en)
 
     # Add labels to text classifier
     # nlp.add_label("ham")
     # nlp.add_label("spam")
 
     # Split data into train and test datasets
-    # x_train, x_test, y_train, y_test = train_test_split(
-    #     data['text'], data['label'], test_size=0.33, random_state=7)
-    #
-    # # Create the train and test data for the spacy model
-    # train_lables = [{'cats': {'ham': label == 'ham',
+    #x_train, x_test, y_train, y_test = train_test_split(
+    #     df['text'], df['label'], test_size=0.33, random_state=7)       #TODO: was it correct to replace variable data with df ?!
+
+    # Create the train and test data for the spacy model
+    #train_lables = [{'cats': {'ham': label == 'ham',
     #                           'spam': label == 'spam'}} for label in y_train]
-    # test_lables = [{'cats': {'ham': label == 'ham',
+    #test_lables = [{'cats': {'ham': label == 'ham',
     #                          'spam': label == 'spam'}} for label in y_test]
 
     # Spacy model data
@@ -219,8 +234,8 @@ def main():
 
     # Model configurations
     # optimizer = nlp.begin_training()
-    batch_size = 5
-    epochs = 10
+    # batch_size = 5
+    # epochs = 10
 
     # Training the model
     # train_model(nlp, train_data, optimizer, batch_size, epochs)
@@ -253,3 +268,17 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+#RESULT:
+'''
+spam.csv
+    Train accuracy: 0.999196356817573
+    Test accuracy: 0.9809679173463839
+
+spam_preprocessed.csv: 
+    Train accuracy: 0.998392713635146
+    Test accuracy: 0.9885869565217391
+    
+    --> Train accuracy is lower but test accuracy increased by 0.008 
+'''
