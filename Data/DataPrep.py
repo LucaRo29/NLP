@@ -103,7 +103,7 @@ def main():
     result = pd.concat(frames)
     print(result.columns.values)
     print(result.head())
-    result.to_csv("../Bert/data.csv")
+    result.to_csv("../Data/data.csv")
 
 
 if __name__ == "__main__":
