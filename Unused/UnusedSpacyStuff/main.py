@@ -2,7 +2,7 @@ import spacy
 from spacy.tokens import DocBin
 import pandas as pd
 
-from examples.UnusedSpacyStuff.SpacyExample import data_path
+from Unused.UnusedSpacyStuff.SpacyExample import data_path
 
 data_path = "data/spam_luca.csv"
 
