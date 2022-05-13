@@ -11,8 +11,8 @@ from sklearn.metrics import confusion_matrix
 from matplotlib import pyplot as plt
 
 ## Paths
-data_path = "../data/spam.csv"
-data_path2 = "../data/enron_spam_data.csv"
+data_path = "../Bert/spam.csv"
+data_path2 = "../Bert/enron_spam_data.csv"
 
 from string import punctuation
 import re
@@ -76,7 +76,7 @@ def main():
     dataset1 = pd.read_csv(data_path,encoding='latin-1')
     print(dataset1.head())
     print(dataset1.columns.values)
-    dataset1.drop(columns=['Unnamed: 2', 'Unnamed: 3','Unnamed: 4'],inplace=True)
+   # dataset1.drop(columns=['Unnamed: 2', 'Unnamed: 3','Unnamed: 4'],inplace=True)
     print(dataset1.columns.values)
 
     # Load dataset 2
@@ -92,7 +92,7 @@ def main():
 
     #prep data
 
-    #dataset2['Message'] = dataset2['Message'].apply(preproces_text)
+   # dataset2['Message'] = dataset2['Message'].apply(preproces_text)
 
     dataset2.drop(columns=['Message ID', 'Subject','Date'],inplace=True)
     dataset2.rename(columns={"Message": "text", "Spam/Ham": "label"})
@@ -103,6 +103,7 @@ def main():
     result = pd.concat(frames)
     print(result.columns.values)
     print(result.head())
+    result.to_csv("../Bert/data.csv")
 
 
 if __name__ == "__main__":

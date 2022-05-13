@@ -1,7 +1,7 @@
 import pandas as pd
 from preprocessing import Preprocess
 
-data_path = "../data/spam.csv"
+data_path = "../data/spam_luca.csv"
 dataset = pd.read_table(data_path, header=None, encoding="utf-8")
 # take text column
 text_column = dataset['text']

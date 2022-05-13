@@ -22,7 +22,7 @@ import time
 #---------------------------------------------------------------------#
 
 ## Paths
-data_path = "../data/spam.csv"
+data_path = "../data/spam_luca.csv"
 #data_path = "../data/spam_preprocessed.csv"
 
 ## Configurations
@@ -272,7 +272,7 @@ if __name__ == "__main__":
 
 #RESULT:
 '''
-spam.csv
+spam_luca.csv
     Train accuracy: 0.999196356817573
     Test accuracy: 0.9809679173463839
 

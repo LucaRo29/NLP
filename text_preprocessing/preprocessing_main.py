@@ -39,7 +39,7 @@ techniques = ["lcc", "ntw", "rp", "res", "sto", "ata",   "sc", "rs", "ps", "l"]
 #techniques = ["lcc", "ntw"]
 
 # Load dataset
-data_path = "../data/spam.csv"
+data_path = "../data/spam_luca.csv"
 data = pd.read_csv(data_path)
 
 documents = data['text'].tolist()

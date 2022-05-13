@@ -14,8 +14,8 @@ from sklearn.metrics import confusion_matrix
 from matplotlib import pyplot as plt
 
 ## Paths
-data_path = "../../data/spam.csv"
-csv_path = pl.Path("data/spam.csv")
+data_path = "../../data/spam_luca.csv"
+csv_path = pl.Path("data/spam_luca.csv")
 print(csv_path.is_file())
 nlp = spacy.blank("en")
 

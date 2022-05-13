@@ -85,7 +85,7 @@ def create_model(tokenizer, max_length_sequence):
 
 def main():
     print("START!")
-    df = pd.read_csv("../../../Project/NLP/LSTM/spam.csv", encoding='latin-1')
+    df = pd.read_csv("../../../Project/NLP/LSTM/spam_luca.csv", encoding='latin-1')
     print(df.head())
     print("shape: ", df.shape)  # output - (5572, 8674))
 

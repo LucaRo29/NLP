@@ -13,9 +13,8 @@ from sklearn.metrics import confusion_matrix, classification_report
 import numpy as np
 import seaborn as sns
 
-
 def main():
-    df = pd.read_csv('./spam.csv')
+    df = pd.read_csv('spam_luca.csv')
     # check count and unique and top values and their frequency
     df['label'].value_counts()
 

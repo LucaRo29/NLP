@@ -4,7 +4,7 @@ import pandas as pd
 
 from examples.UnusedSpacyStuff.SpacyExample import data_path
 
-data_path = "data/spam.csv"
+data_path = "data/spam_luca.csv"
 
 
 ###
