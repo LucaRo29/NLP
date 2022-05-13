@@ -1,14 +1,9 @@
-import tensorflow_hub as hub
-
-import pandas as pd
-
-import tensorflow_text as text
-
-import matplotlib.pyplot as plt
-
-from sklearn.model_selection import train_test_split
-
 import tensorflow as tf
+import tensorflow_hub as hub
+import tensorflow_text as text
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
 import numpy as np
 import seaborn as sns
@@ -100,6 +95,7 @@ def main():
     sns.heatmap(cm, annot=True, fmt='d')
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
+    plt.show()
 
     # printing classification report
     print(classification_report(y_test, y_pred))
