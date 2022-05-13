@@ -10,7 +10,7 @@ import seaborn as sns
 
 
 def main():
-    df = pd.read_csv('./spam.csv')
+    df = pd.read_csv('../Data/spam.csv')
     # check count and unique and top values and their frequency
     df['label'].value_counts()
 
