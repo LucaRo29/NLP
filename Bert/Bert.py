@@ -1,20 +1,29 @@
-import tensorflow_hub as hub
-
-import pandas as pd
-
-import tensorflow_text as text
-
-import matplotlib.pyplot as plt
-
-from sklearn.model_selection import train_test_split
-
 import tensorflow as tf
+import tensorflow_hub as hub
+import tensorflow_text as text
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
 import numpy as np
 import seaborn as sns
 
+
 def main():
-    df = pd.read_csv('spam_luca.csv')
+    df1 = pd.read_csv('../Data/spam.csv',index_col=False)
+    df = pd.read_csv('../Data/data.csv',index_col=False)
+
+    print(df.head())
+
+    if df.shape[1] > 2:
+        df.drop(columns=df.columns[0],
+                axis=1,
+                inplace=True)
+
+    df.to_csv("../Data/data.csv", index=False)
+    print(df.head())
+    print(df1.head())
+    return
     # check count and unique and top values and their frequency
     df['label'].value_counts()
 
@@ -56,8 +65,8 @@ def main():
 
     text_input = tf.keras.layers.Input(shape=(), dtype=tf.string, name='Inputs')
     preprocessed_text = bert_preprocessor(text_input)
-    embeed = bert_encoder(preprocessed_text)
-    dropout = tf.keras.layers.Dropout(0.1, name='Dropout')(embeed['pooled_output'])
+    embed = bert_encoder(preprocessed_text)
+    dropout = tf.keras.layers.Dropout(0.1, name='Dropout')(embed['pooled_output'])
     outputs = tf.keras.layers.Dense(1, activation='sigmoid', name='Dense')(dropout)
 
     # creating final model
@@ -75,7 +84,9 @@ def main():
                   loss='binary_crossentropy',
                   metrics=Metrics)
 
-    history = model.fit(X_train, y_train, epochs=10)
+    print(type(X_train), type(y_train))
+
+    history = model.fit(X_train, y_train, epochs=1)
 
     model.evaluate(X_test, y_test)
 
