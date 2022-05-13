@@ -13,12 +13,13 @@ def main():
     df1 = pd.read_csv('../Data/spam.csv',index_col=False)
     df = pd.read_csv('../Data/data.csv',index_col=False)
 
-    print(df.head())
+    #print(df.head())
 
-    if df.shape[1] > 2:
-        df.drop(columns=df.columns[0],
-                axis=1,
-                inplace=True)
+    print(df.shape)
+    df = df.dropna()
+    print(df.shape)
+
+
 
     df.to_csv("../Data/data.csv", index=False)
     print(df.head())
