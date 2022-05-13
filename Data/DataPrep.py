@@ -11,8 +11,8 @@ from sklearn.metrics import confusion_matrix
 from matplotlib import pyplot as plt
 
 ## Paths
-data_path = "../Bert/spam.csv"
-data_path2 = "../Bert/enron_spam_data.csv"
+data_path = "../Data/spam.csv"
+data_path2 = "../Data/enron_spam_data.csv"
 
 from string import punctuation
 import re
@@ -88,16 +88,17 @@ def main():
     dataset2 = dataset2.dropna(subset=['Message'])
     #clean data
 
-    #dataset2['Message'] = dataset2['Message'].apply(clean_email)
+    dataset2['Message'] = dataset2['Message'].apply(clean_email)
 
     #prep data
 
-   # dataset2['Message'] = dataset2['Message'].apply(preproces_text)
+    dataset2['Message'] = dataset2['Message'].apply(preproces_text)
 
     dataset2.drop(columns=['Message ID', 'Subject','Date'],inplace=True)
-    dataset2.rename(columns={"Message": "text", "Spam/Ham": "label"})
-    dataset2 = dataset2.reindex(columns=["label", "text"])
+    dataset2.rename(columns={"Message": "text", "Spam/Ham": "label"},inplace=True )
+    dataset2.reindex(columns=["label", "text"])
     print(dataset2.columns.values)
+    print(dataset2.head())
 
     frames = [dataset1,dataset2]
     result = pd.concat(frames)
