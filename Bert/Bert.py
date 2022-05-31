@@ -30,9 +30,13 @@ def main():
 
     # creating 2 new dataframe as df_ham , df_spam
 
-    df_spam = df[df['label'] == 'spam']
+    # df_spam = df[df['label'] == 1]
+    #
+    # df_ham = df[df['label'] == 0]
 
-    df_ham = df[df['label'] == 'ham']
+    df_spam = df[df['label'] == '1']
+
+    df_ham = df[df['label'] == '0']
 
     print("Ham Dataset Shape:", df_ham.shape)
 
@@ -47,19 +51,35 @@ def main():
     df_balanced = pd.concat([df_spam, df_ham_downsampled])
     print(df_balanced['label'].value_counts())
 
+    print()
+    print('Balanced:')
     print(df_balanced.sample(10))
 
     # creating numerical representation of category - one hot encoding
-    df_balanced['spam'] = df_balanced['label'].apply(lambda x: 1 if x == 'spam' else 0)
+    # df_balanced['spam'] = df_balanced['label'].apply(lambda x: 1 if x == 'spam' else 0)
 
     # displaying data - spam -1 , ham-0
-    print(df_balanced.sample(4))
+    # print(df_balanced.sample(4))
 
     # loading train test split
 
-    X_train, X_test, y_train, y_test = train_test_split(df_balanced['text'], df_balanced['spam'],
-                                                        stratify=df_balanced['spam'])
+    X_train, X_test, y_train, y_test = train_test_split(df_balanced['transformed_text'], df_balanced['1'],
+                                                        stratify=df_balanced['1'])
 
+    print((type(X_train)))
+    print(X_train)
+
+    X_train = X_train.to_numpy()
+    print((type(X_train)))
+    print(X_train)
+
+    print(type(y_train))
+    print(y_train)
+
+    y_train = y_train.to_numpy()
+
+    print(type(y_train))
+    print(y_train)
     # downloading preprocessing files and model
     bert_preprocessor = hub.KerasLayer('https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3')
     bert_encoder = hub.KerasLayer('https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/4')
@@ -68,7 +88,8 @@ def main():
     preprocessed_text = bert_preprocessor(text_input)
     embed = bert_encoder(preprocessed_text)
     dropout = tf.keras.layers.Dropout(0.1, name='Dropout')(embed['pooled_output'])
-    outputs = tf.keras.layers.Dense(1, activation='sigmoid', name='Dense')(dropout)
+    x = tf.keras.layers.Dense(128, activation='relu')(dropout)
+    outputs = tf.keras.layers.Dense(1, activation='sigmoid', name='Dense')(x)
 
     # creating final model
     model = tf.keras.Model(inputs=[text_input], outputs=[outputs])
@@ -85,7 +106,7 @@ def main():
                   loss='binary_crossentropy',
                   metrics=Metrics)
 
-    history = model.fit(X_train, y_train, epochs=6)
+    history = model.fit(X_train, y_train, epochs=1)
 
     model.evaluate(X_test, y_test)
 
