@@ -10,21 +10,21 @@ import seaborn as sns
 
 
 def main():
-    df1 = pd.read_csv('../Data/spam.csv',index_col=False)
-    df = pd.read_csv('../Data/data.csv',index_col=False)
+    # df1 = pd.read_csv('../Data/spam.csv',index_col=False)
+    df = pd.read_csv('../Data/preprocessed/enron_prep.csv', index_col=False)
 
-    #print(df.head())
+    # print(df.head())
 
-    print(df.shape)
-    df = df.dropna()
-    print(df.shape)
-
-
-
-    df.to_csv("../Data/data.csv", index=False)
-    print(df.head())
-    print(df1.head())
-    return
+    # print(df.shape)
+    # df = df.dropna()
+    # print(df.shape)
+    #
+    #
+    #
+    # df.to_csv("../Data/data.csv", index=False)
+    # print(df.head())
+    # print(df1.head())
+    # return
     # check count and unique and top values and their frequency
     df['label'].value_counts()
 
@@ -85,9 +85,7 @@ def main():
                   loss='binary_crossentropy',
                   metrics=Metrics)
 
-    print(type(X_train), type(y_train))
-
-    history = model.fit(X_train, y_train, epochs=1)
+    history = model.fit(X_train, y_train, epochs=6)
 
     model.evaluate(X_test, y_test)
 
@@ -111,6 +109,8 @@ def main():
     sns.heatmap(cm, annot=True, fmt='d')
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
+    plt.savefig('../Bert/Data/bertCM.png')
+    plt.show()
 
     # printing classification report
     print(classification_report(y_test, y_pred))
