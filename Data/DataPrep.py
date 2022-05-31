@@ -104,7 +104,8 @@ def main():
     result = pd.concat(frames)
     print(result.columns.values)
     print(result.head())
-    result.to_csv("../Data/data.csv",index=False)
+
+    result.to_csv("../Data/data.csv", index=False)
 
 
 if __name__ == "__main__":
