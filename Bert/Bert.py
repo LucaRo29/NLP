@@ -12,6 +12,7 @@ import seaborn as sns
 def main():
     # df1 = pd.read_csv('../Data/spam.csv',index_col=False)
     df = pd.read_csv('../Data/preprocessed/enron_prep.csv', index_col=False)
+    df2 = pd.read_csv('../Data/raw/data.csv', index_col=False)
 
     # print(df.head())
 
@@ -30,17 +31,25 @@ def main():
 
     # creating 2 new dataframe as df_ham , df_spam
 
-    # df_spam = df[df['label'] == 1]
-    #
-    # df_ham = df[df['label'] == 0]
+    df_spam = df[df['label'] == 1]
 
-    df_spam = df[df['label'] == '1']
+    df_ham = df[df['label'] == 0]
 
-    df_ham = df[df['label'] == '0']
+    df2_spam = df2[df2['label'] == 'spam']
+
+    df2_ham = df2[df2['label'] == 'ham']
 
     print("Ham Dataset Shape:", df_ham.shape)
 
     print("Spam Dataset Shape:", df_spam.shape)
+
+    print("Ham Dataset Shape:", df2_ham.shape)
+
+    print("Spam Dataset Shape:", df2_spam.shape)
+
+    print(df.sample(5))
+
+    print(df2.sample(2))
 
     # downsampling ham dataset - take only random 747 example
     # will use df_spam.shape[0] - 747
@@ -55,31 +64,61 @@ def main():
     print('Balanced:')
     print(df_balanced.sample(10))
 
+    df2_ham_downsampled = df2_ham.sample(df2_spam.shape[0])
+    print(df2_ham_downsampled.shape)
+
+    # concating both dataset - df_spam and df_ham_balanced to create df_balanced dataset
+    df2_balanced = pd.concat([df2_spam, df2_ham_downsampled])
+    print(df2_balanced['label'].value_counts())
+
+    print()
+    print('Balanced:')
+    print(df2_balanced.sample(10))
+
     # creating numerical representation of category - one hot encoding
-    # df_balanced['spam'] = df_balanced['label'].apply(lambda x: 1 if x == 'spam' else 0)
+    df2_balanced['spam'] = df2_balanced['label'].apply(lambda x: 1 if x == 'spam' else 0)
+
+    print('Balanced after lambda :')
+    print(df2_balanced.sample(10))
 
     # displaying data - spam -1 , ham-0
     # print(df_balanced.sample(4))
 
     # loading train test split
+    print()
+    print()
+    print()
+    print()
+    print()
+    print()
+    print()
 
-    X_train, X_test, y_train, y_test = train_test_split(df_balanced['transformed_text'], df_balanced['1'],
-                                                        stratify=df_balanced['1'])
 
+    X_train, X_test, y_train, y_test = train_test_split(df_balanced['transformed_text'], df_balanced['label'])
     print((type(X_train)))
-    print(X_train)
+    print(X_train.head(2))
+    print(type(y_train))
+    print(y_train.head(2))
 
-    X_train = X_train.to_numpy()
+    X_train, X_test, y_train, y_test = train_test_split(df2_balanced['text'], df2_balanced['spam'],
+                                                        stratify=df2_balanced['spam'])
+    print("!!!!!!!!!!!!!!!!!!!!!!")
     print((type(X_train)))
-    print(X_train)
-
+    print(X_train.head(2))
     print(type(y_train))
-    print(y_train)
+    print(y_train.head(2))
 
-    y_train = y_train.to_numpy()
-
-    print(type(y_train))
-    print(y_train)
+    # X_train = X_train.to_numpy()
+    # print((type(X_train)))
+    # print(X_train)
+    #
+    # print(type(y_train))
+    # print(y_train)
+    #
+    # y_train = y_train.to_numpy()
+    #
+    # print(type(y_train))
+    # print(y_train)
     # downloading preprocessing files and model
     bert_preprocessor = hub.KerasLayer('https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3')
     bert_encoder = hub.KerasLayer('https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/4')
