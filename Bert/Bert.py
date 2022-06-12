@@ -1,8 +1,10 @@
+import keras
 import tensorflow as tf
 import tensorflow_hub as hub
 import tensorflow_text as text
 import pandas as pd
 import matplotlib.pyplot as plt
+from keras.callbacks import EarlyStopping
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
 import numpy as np
@@ -10,22 +12,11 @@ import seaborn as sns
 
 
 def main():
-    # df1 = pd.read_csv('../Data/spam.csv',index_col=False)
     df = pd.read_csv('../Data/preprocessed/enron_prep.csv', index_col=False)
-    df2 = pd.read_csv('../Data/raw/data.csv', index_col=False)
+    df = pd.read_csv('../Data/preprocessed/dataset_elias_preprocessed.csv', index_col=False)
+    new_model = True
+    downsample = False
 
-    # print(df.head())
-
-    # print(df.shape)
-    # df = df.dropna()
-    # print(df.shape)
-    #
-    #
-    #
-    # df.to_csv("../Data/data.csv", index=False)
-    # print(df.head())
-    # print(df1.head())
-    # return
     # check count and unique and top values and their frequency
     df['label'].value_counts()
 
@@ -35,103 +26,52 @@ def main():
 
     df_ham = df[df['label'] == 0]
 
-    df2_spam = df2[df2['label'] == 'spam']
+    # downsampling ham dataset
 
-    df2_ham = df2[df2['label'] == 'ham']
-
-    print("Ham Dataset Shape:", df_ham.shape)
-
-    print("Spam Dataset Shape:", df_spam.shape)
-
-    print("Ham Dataset Shape:", df2_ham.shape)
-
-    print("Spam Dataset Shape:", df2_spam.shape)
-
-    print(df.sample(5))
-
-    print(df2.sample(2))
-
-    # downsampling ham dataset - take only random 747 example
-    # will use df_spam.shape[0] - 747
     df_ham_downsampled = df_ham.sample(df_spam.shape[0])
-    print(df_ham_downsampled.shape)
 
     # concating both dataset - df_spam and df_ham_balanced to create df_balanced dataset
     df_balanced = pd.concat([df_spam, df_ham_downsampled])
-    print(df_balanced['label'].value_counts())
 
-    print()
-    print('Balanced:')
-    print(df_balanced.sample(10))
+    df_balanced.dropna(inplace=True)
 
-    df2_ham_downsampled = df2_ham.sample(df2_spam.shape[0])
-    print(df2_ham_downsampled.shape)
+    if (downsample):
+        df_balanced = df_balanced.sample(100)
+        print('data is downsampled')
 
-    # concating both dataset - df_spam and df_ham_balanced to create df_balanced dataset
-    df2_balanced = pd.concat([df2_spam, df2_ham_downsampled])
-    print(df2_balanced['label'].value_counts())
+    X_train, X_val, y_train, y_val = train_test_split(df_balanced['text'], df_balanced['label'], train_size=0.7)
+    X_val, X_test, y_val, y_test = train_test_split(X_val, y_val, train_size=0.5)
 
-    print()
-    print('Balanced:')
-    print(df2_balanced.sample(10))
-
-    # creating numerical representation of category - one hot encoding
-    df2_balanced['spam'] = df2_balanced['label'].apply(lambda x: 1 if x == 'spam' else 0)
-
-    print('Balanced after lambda :')
-    print(df2_balanced.sample(10))
-
-    # displaying data - spam -1 , ham-0
-    # print(df_balanced.sample(4))
-
-    # loading train test split
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
-
-
-    X_train, X_test, y_train, y_test = train_test_split(df_balanced['transformed_text'], df_balanced['label'])
-    print((type(X_train)))
-    print(X_train.head(2))
-    print(type(y_train))
-    print(y_train.head(2))
-
-    X_train, X_test, y_train, y_test = train_test_split(df2_balanced['text'], df2_balanced['spam'],
-                                                        stratify=df2_balanced['spam'])
-    print("!!!!!!!!!!!!!!!!!!!!!!")
-    print((type(X_train)))
-    print(X_train.head(2))
-    print(type(y_train))
-    print(y_train.head(2))
-
-    # X_train = X_train.to_numpy()
-    # print((type(X_train)))
-    # print(X_train)
-    #
-    # print(type(y_train))
-    # print(y_train)
-    #
-    # y_train = y_train.to_numpy()
-    #
-    # print(type(y_train))
-    # print(y_train)
+    print(X_train.shape)
+    print(X_val.shape)
+    print(X_test.shape)
+    return
     # downloading preprocessing files and model
-    bert_preprocessor = hub.KerasLayer('https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3')
-    bert_encoder = hub.KerasLayer('https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/4')
+    model = None
+    if (new_model):
 
-    text_input = tf.keras.layers.Input(shape=(), dtype=tf.string, name='Inputs')
-    preprocessed_text = bert_preprocessor(text_input)
-    embed = bert_encoder(preprocessed_text)
-    dropout = tf.keras.layers.Dropout(0.1, name='Dropout')(embed['pooled_output'])
-    x = tf.keras.layers.Dense(128, activation='relu')(dropout)
-    outputs = tf.keras.layers.Dense(1, activation='sigmoid', name='Dense')(x)
+        print('Generating new model')
+        bert_preprocessor = hub.KerasLayer('https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3')
+        bert_encoder = hub.KerasLayer('https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/4')
 
-    # creating final model
-    model = tf.keras.Model(inputs=[text_input], outputs=[outputs])
+        text_input = tf.keras.layers.Input(shape=(), dtype=tf.string, name='Inputs')
+        preprocessed_text = bert_preprocessor(text_input)
+        embed = bert_encoder(preprocessed_text)
+        dropout = tf.keras.layers.Dropout(0.5, name='Dropout')(embed['pooled_output'])
+        x = tf.keras.layers.Dense(64, activation='relu')(dropout)
+        outputs = tf.keras.layers.Dense(1, activation='sigmoid', name='Dense')(x)
+
+        # creating final model
+        model = tf.keras.Model(inputs=[text_input], outputs=[outputs])
+
+        model.save("../Bert/Model")
+    else:
+        print('Loading old model')
+        model = keras.models.load_model("../Bert/Model")
+
+    if (model is None):
+        print("Error: No model")
+        return
 
     print(model.summary())
 
@@ -141,35 +81,70 @@ def main():
                ]
 
     # compiling our model
-    model.compile(optimizer='adam',
-                  loss='binary_crossentropy',
-                  metrics=Metrics)
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=Metrics)
 
-    history = model.fit(X_train, y_train, epochs=1)
+    es = EarlyStopping(patience=5, verbose=1, min_delta=0.001, monitor='loss', mode='auto',
+                       restore_best_weights=True)
 
-    model.evaluate(X_test, y_test)
+    num_epochs = 2
+    history = model.fit(X_train, y_train, epochs=num_epochs, validation_data=(X_test, y_test), batch_size=50,
+                        callbacks=[es], shuffle=True)
 
-    # getting y_pred by predicting over X_text and flattening it
+    # getting y_pred by predicting over X_test
     y_pred = model.predict(X_test)
-    y_pred = y_pred.flatten()  # require to be in one-dimensional array , for easy manipulation
 
-    y_test = y_test.to_numpy()
+    # require to be in one-dimensional array
+    y_pred = y_pred.flatten()
+
+    # convert logits to labels
     y_pred = np.where(y_pred > 0.5, 1, 0)
+
     # creating confusion matrix
-    print(type(y_test), type(y_pred))
-    print(y_test)
-    print(y_pred)
     cm = confusion_matrix(y_test, y_pred)
 
-    print(cm)
-
-    # plotting as a graph - importing seaborn
+    # print(cm)
 
     # creating a graph out of confusion matrix
     sns.heatmap(cm, annot=True, fmt='d')
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
-    plt.savefig('../Bert/Data/bertCM.png')
+    plt.savefig('../Bert/Data/bert_CM.png')
+    plt.show()
+
+    loss_train = history.history['loss']
+    loss_val = history.history['val_loss']
+    epochs = range(1, num_epochs + 1)
+    plt.plot(epochs, loss_train, 'g', label='Training loss')
+    plt.plot(epochs, loss_val, 'b', label='validation loss')
+    plt.title('Training and Validation loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.savefig('../Bert/Data/bert_loss.png')
+    plt.show()
+
+    precision_train = history.history['precision']
+    precision_val = history.history['val_precision']
+    epochs = range(1, num_epochs + 1)
+    plt.plot(epochs, precision_train, 'g', label='Training loss')
+    plt.plot(epochs, precision_val, 'b', label='validation loss')
+    plt.title('Training and Validation loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.savefig('../Bert/Data/bert_precision.png')
+    plt.show()
+
+    accuracy_train = history.history['accuracy']
+    accuracy_val = history.history['val_precision']
+    epochs = range(1, num_epochs + 1)
+    plt.plot(epochs, accuracy_train, 'g', label='Training loss')
+    plt.plot(epochs, accuracy_val, 'b', label='validation loss')
+    plt.title('Training and Validation loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.savefig('../Bert/Data/bert_accuracy.png')
     plt.show()
 
     # printing classification report

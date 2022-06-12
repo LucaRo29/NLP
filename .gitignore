@@ -2,3 +2,25 @@
 .DS_Store
 .env/
 examples/__pycache__/
+./Bert/enron/Model
+/Bert/Bert_merged/variables/
+/Bert/Bert_merged/keras_metadata.pb
+/Bert/Bert_merged/saved_model.pb
+/Bert/Bert_merged/assets/
+/Bert/Bert_enron/Model/variables/
+/Bert/Bert_enron/Model/keras_metadata.pb
+/Bert/Bert_enron/Model/saved_model.pb
+/Bert/Bert_enron/Model/assets/
+/Bert/Bert_dataset_elias_preprocessed/dataset_elias_preprocessed/
+
+/Bert/enron/
+
+
+Bert/Bert_dataset_elias_preprocessed-20220612T085254Z-001.zip
+ Bert/Bert_dataset_elias_preprocessed/
+Bert/Bert_enron-20220610T140113Z-001.zip
+
+Bert/Bert_merged-20220610T135318Z-001.zip
+ Bert/Bert_merged/
+Bert/NLP_Bert.ipynb
+        Data/Luca_spam.csv
