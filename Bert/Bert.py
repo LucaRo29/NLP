@@ -103,48 +103,51 @@ def main():
     cm = confusion_matrix(y_test, y_pred)
 
     # print(cm)
+    best_epoch = es.best_epoch + 1
+    # creating a graph out of confusion matrix
+    cm = confusion_matrix(y_test, y_pred)
 
     # creating a graph out of confusion matrix
     sns.heatmap(cm, annot=True, fmt='d')
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
-    plt.savefig('../Bert/Data/bert_CM.png')
+    # plt.savefig('../Bert/Data/bert_CM.png')
+    #plt.savefig('/content/drive/MyDrive/NLP/Bert_' + dataset + '/figures/bert' + dataset + '_CM.png')
     plt.show()
 
-    loss_train = history.history['loss']
-    loss_val = history.history['val_loss']
-    epochs = range(1, num_epochs + 1)
-    plt.plot(epochs, loss_train, 'g', label='Training loss')
-    plt.plot(epochs, loss_val, 'b', label='validation loss')
+    # epochs = range(1, num_epochs+1)
+    # print(epochs)
+    plt.plot(history.history['loss'], 'g', label='Training loss')
+    plt.plot(history.history['val_loss'], 'b', label='validation loss')
+    plt.axvline(x=best_epoch, color='r', label='best_epoch')
     plt.title('Training and Validation loss')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
-    plt.savefig('../Bert/Data/bert_loss.png')
+    #plt.savefig('/content/drive/MyDrive/NLP/Bert_' + dataset + '/figures/bert' + dataset + '_loss.png')
     plt.show()
 
-    precision_train = history.history['precision']
-    precision_val = history.history['val_precision']
-    epochs = range(1, num_epochs + 1)
-    plt.plot(epochs, precision_train, 'g', label='Training loss')
-    plt.plot(epochs, precision_val, 'b', label='validation loss')
-    plt.title('Training and Validation loss')
+    # epochs = range(1, num_epochs+1)
+    plt.plot(history.history['precision'], 'g', label='Training precision')
+    plt.plot(history.history['val_precision'], 'b', label='validation precision')
+    plt.axvline(x=best_epoch, color='r', label='best_epoch')
+    plt.title('Training and Validation precision')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
-    plt.savefig('../Bert/Data/bert_precision.png')
+    #plt.savefig('/content/drive/MyDrive/NLP/Bert_' + dataset + '/figures/bert' + dataset + '_precision.png')
+    # plt.savefig('../Bert/Data/bert_precision.png')
     plt.show()
 
-    accuracy_train = history.history['accuracy']
-    accuracy_val = history.history['val_precision']
-    epochs = range(1, num_epochs + 1)
-    plt.plot(epochs, accuracy_train, 'g', label='Training loss')
-    plt.plot(epochs, accuracy_val, 'b', label='validation loss')
-    plt.title('Training and Validation loss')
+    plt.plot(history.history['accuracy'], 'g', label='Training accuracy')
+    plt.plot(history.history['val_accuracy'], 'b', label='validation accuracy')
+    plt.axvline(x=best_epoch, color='r', label='best_epoch')
+    plt.title('Training and Validation accuracy')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
-    plt.savefig('../Bert/Data/bert_accuracy.png')
+    #plt.savefig('/content/drive/MyDrive/NLP/Bert_' + dataset + '/figures/bert' + dataset + '_accuracy.png')
+    # plt.savefig('../Bert/Data/bert_accuracy.png')
     plt.show()
 
     # printing classification report
