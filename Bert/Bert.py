@@ -1,24 +1,27 @@
-import keras
 import tensorflow as tf
 import tensorflow_hub as hub
 import tensorflow_text as text
 import pandas as pd
 import matplotlib.pyplot as plt
-from keras.callbacks import EarlyStopping
-from sklearn.model_selection import train_test_split
+
+from sklearn.model_selection import train_test_split, cross_val_score, KFold
 from sklearn.metrics import confusion_matrix, classification_report
 import numpy as np
 import seaborn as sns
 
 
+# from tf.keras.callbacks import EarlyStopping
+# import keras
+
 def main():
-    df = pd.read_csv('../Data/preprocessed/enron_prep.csv', index_col=False)
-    df = pd.read_csv('../Data/preprocessed/dataset_elias_preprocessed.csv', index_col=False)
+    df = pd.read_csv('../Data/Cleaned/enron_cleaned.csv', index_col=False)
+    df = pd.read_csv('../Data/Cleaned/spam_cleaned.csv', index_col=False)
+    # df = pd.read_csv('../Data/preprocessed/merged_cleaned_preprocessed.csv', index_col=False)
     new_model = True
     downsample = False
 
     # check count and unique and top values and their frequency
-    df['label'].value_counts()
+    print(df['label'].value_counts())
 
     # creating 2 new dataframe as df_ham , df_spam
 
@@ -33,63 +36,83 @@ def main():
     # concating both dataset - df_spam and df_ham_balanced to create df_balanced dataset
     df_balanced = pd.concat([df_spam, df_ham_downsampled])
 
-    df_balanced.dropna(inplace=True)
-
+    X_train, X_val, y_train, y_val = train_test_split(df['text'], df['label'], train_size=0.7)
     if (downsample):
-        df_balanced = df_balanced.sample(100)
+        X_train, X_val, y_train, y_val = train_test_split(df_balanced['text'], df_balanced['label'], train_size=0.7)
         print('data is downsampled')
 
-    X_train, X_val, y_train, y_val = train_test_split(df_balanced['text'], df_balanced['label'], train_size=0.7)
     X_val, X_test, y_val, y_test = train_test_split(X_val, y_val, train_size=0.5)
 
-    print(X_train.shape)
-    print(X_val.shape)
-    print(X_test.shape)
-    return
     # downloading preprocessing files and model
     model = None
     if (new_model):
+        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-8_H-256_A-4/2'
+        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-10_H-128_A-2/2'
+        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-4_H-768_A-12/2'
+
+
+        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-6_H-256_A-4/2'
+        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-8_H-256_A-4/2'
+        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-10_H-256_A-4/2'
+        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-12_H-256_A-4/2'
+        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-4_H-512_A-8/2'
+        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-6_H-512_A-8/2'
+        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-4_H-512_A-8/2'
 
         print('Generating new model')
+
         bert_preprocessor = hub.KerasLayer('https://tfhub.dev/tensorflow/bert_en_uncased_preprocess/3')
-        bert_encoder = hub.KerasLayer('https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/4')
+        bert_encoder = hub.KerasLayer(bertURL)
 
         text_input = tf.keras.layers.Input(shape=(), dtype=tf.string, name='Inputs')
         preprocessed_text = bert_preprocessor(text_input)
         embed = bert_encoder(preprocessed_text)
-        dropout = tf.keras.layers.Dropout(0.5, name='Dropout')(embed['pooled_output'])
-        x = tf.keras.layers.Dense(64, activation='relu')(dropout)
-        outputs = tf.keras.layers.Dense(1, activation='sigmoid', name='Dense')(x)
+
+        x = tf.keras.layers.Dropout(0.25)(embed['pooled_output'])
+        x = tf.keras.layers.Dense(256, activation='relu')(x)
+        x = tf.keras.layers.BatchNormalization()(x)
+        x = tf.keras.layers.Dropout(0.25)(x)
+        x = tf.keras.layers.Dense(256, activation='relu')(x)
+        x = tf.keras.layers.BatchNormalization()(x)
+        x = tf.keras.layers.Dropout(0.25)(x)
+        x = tf.keras.layers.Dense(256, activation='relu')(x)
+        outputs = tf.keras.layers.Dense(1, activation='sigmoid', name='output')(x)
 
         # creating final model
         model = tf.keras.Model(inputs=[text_input], outputs=[outputs])
 
-        model.save("../Bert/Model")
+        # model.save("../Bert/Model")
     else:
         print('Loading old model')
-        model = keras.models.load_model("../Bert/Model")
+        model = tf.keras.models.load_model("../Bert/Model")
 
     if (model is None):
         print("Error: No model")
         return
 
     print(model.summary())
+    return
 
     Metrics = [tf.keras.metrics.BinaryAccuracy(name='accuracy'),
                tf.keras.metrics.Precision(name='precision'),
-               tf.keras.metrics.Recall(name='recall')
-               ]
+               tf.keras.metrics.Recall(name='recall')]
 
     # compiling our model
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=Metrics)
 
-    es = EarlyStopping(patience=5, verbose=1, min_delta=0.001, monitor='loss', mode='auto',
-                       restore_best_weights=True)
+    es = tf.keras.callbacks.EarlyStopping(patience=3, verbose=1, min_delta=0.001, monitor='loss', mode='auto',
+                                          restore_best_weights=True)
 
-    num_epochs = 2
-    history = model.fit(X_train, y_train, epochs=num_epochs, validation_data=(X_test, y_test), batch_size=50,
+    num_epochs = 200
+    history = model.fit(X_train, y_train, epochs=num_epochs, validation_data=(X_val, y_val), batch_size=50,
                         callbacks=[es], shuffle=True)
 
+    # cv = KFold(n_splits=5, shuffle=True, random_state=1)
+    # scores = cross_val_score(model, df_balanced['text'], df_balanced['label'], scoring='accuracy', cv=cv, n_jobs=-1)
+    # print(scores)
+
+    score = model.evaluate(X_test, y_test)
+    print('Score: ', score)
     # getting y_pred by predicting over X_test
     y_pred = model.predict(X_test)
 
@@ -103,7 +126,7 @@ def main():
     cm = confusion_matrix(y_test, y_pred)
 
     # print(cm)
-    best_epoch = es.best_epoch + 1
+    best_epoch = es.best_epoch
     # creating a graph out of confusion matrix
     cm = confusion_matrix(y_test, y_pred)
 
@@ -112,7 +135,7 @@ def main():
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
     # plt.savefig('../Bert/Data/bert_CM.png')
-    #plt.savefig('/content/drive/MyDrive/NLP/Bert_' + dataset + '/figures/bert' + dataset + '_CM.png')
+    # plt.savefig('/content/drive/MyDrive/NLP/Bert_' + dataset + '/figures/bert' + dataset + '_CM.png')
     plt.show()
 
     # epochs = range(1, num_epochs+1)
@@ -124,7 +147,7 @@ def main():
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
-    #plt.savefig('/content/drive/MyDrive/NLP/Bert_' + dataset + '/figures/bert' + dataset + '_loss.png')
+    # plt.savefig('/content/drive/MyDrive/NLP/Bert_' + dataset + '/figures/bert' + dataset + '_loss.png')
     plt.show()
 
     # epochs = range(1, num_epochs+1)
@@ -135,7 +158,7 @@ def main():
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
-    #plt.savefig('/content/drive/MyDrive/NLP/Bert_' + dataset + '/figures/bert' + dataset + '_precision.png')
+    # plt.savefig('/content/drive/MyDrive/NLP/Bert_' + dataset + '/figures/bert' + dataset + '_precision.png')
     # plt.savefig('../Bert/Data/bert_precision.png')
     plt.show()
 
@@ -146,7 +169,7 @@ def main():
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
-    #plt.savefig('/content/drive/MyDrive/NLP/Bert_' + dataset + '/figures/bert' + dataset + '_accuracy.png')
+    # plt.savefig('/content/drive/MyDrive/NLP/Bert_' + dataset + '/figures/bert' + dataset + '_accuracy.png')
     # plt.savefig('../Bert/Data/bert_accuracy.png')
     plt.show()
 
