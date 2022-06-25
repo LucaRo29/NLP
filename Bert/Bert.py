@@ -14,9 +14,10 @@ import seaborn as sns
 # import keras
 
 def main():
-    df = pd.read_csv('../Data/Cleaned/enron_cleaned.csv', index_col=False)
+    # df = pd.read_csv('../Data/Cleaned/enron_cleaned.csv', index_col=False)
     df = pd.read_csv('../Data/Cleaned/spam_cleaned.csv', index_col=False)
     # df = pd.read_csv('../Data/preprocessed/merged_cleaned_preprocessed.csv', index_col=False)
+
     new_model = True
     downsample = False
 
@@ -46,17 +47,16 @@ def main():
     # downloading preprocessing files and model
     model = None
     if (new_model):
-        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-8_H-256_A-4/2'
-        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-10_H-128_A-2/2'
-        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-4_H-768_A-12/2'
+        # bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-8_H-256_A-4/2'
+        # bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-10_H-128_A-2/2'
+        # bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-4_H-768_A-12/2'
+        # bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-6_H-256_A-4/2'
+        # bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-8_H-256_A-4/2'
+        # bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-10_H-256_A-4/2'
+        # bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-12_H-256_A-4/2'
+        # bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-4_H-512_A-8/2'
+        # bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-6_H-512_A-8/2'
 
-
-        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-6_H-256_A-4/2'
-        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-8_H-256_A-4/2'
-        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-10_H-256_A-4/2'
-        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-12_H-256_A-4/2'
-        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-4_H-512_A-8/2'
-        bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-6_H-512_A-8/2'
         bertURL = 'https://tfhub.dev/tensorflow/small_bert/bert_en_uncased_L-4_H-512_A-8/2'
 
         print('Generating new model')
@@ -81,7 +81,6 @@ def main():
         # creating final model
         model = tf.keras.Model(inputs=[text_input], outputs=[outputs])
 
-        # model.save("../Bert/Model")
     else:
         print('Loading old model')
         model = tf.keras.models.load_model("../Bert/Model")
@@ -91,7 +90,6 @@ def main():
         return
 
     print(model.summary())
-    return
 
     Metrics = [tf.keras.metrics.BinaryAccuracy(name='accuracy'),
                tf.keras.metrics.Precision(name='precision'),
@@ -107,9 +105,7 @@ def main():
     history = model.fit(X_train, y_train, epochs=num_epochs, validation_data=(X_val, y_val), batch_size=50,
                         callbacks=[es], shuffle=True)
 
-    # cv = KFold(n_splits=5, shuffle=True, random_state=1)
-    # scores = cross_val_score(model, df_balanced['text'], df_balanced['label'], scoring='accuracy', cv=cv, n_jobs=-1)
-    # print(scores)
+    model.save('../Bert_SMS/Model/')
 
     score = model.evaluate(X_test, y_test)
     print('Score: ', score)
@@ -130,16 +126,15 @@ def main():
     # creating a graph out of confusion matrix
     cm = confusion_matrix(y_test, y_pred)
 
+    figure_path = '../Bert_SMS/figures/'
+    dataset = 'SMS_'
     # creating a graph out of confusion matrix
     sns.heatmap(cm, annot=True, fmt='d')
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
-    # plt.savefig('../Bert/Data/bert_CM.png')
-    # plt.savefig('/content/drive/MyDrive/NLP/Bert_' + dataset + '/figures/bert' + dataset + '_CM.png')
+    plt.savefig(figure_path + dataset + 'CM.png')
     plt.show()
 
-    # epochs = range(1, num_epochs+1)
-    # print(epochs)
     plt.plot(history.history['loss'], 'g', label='Training loss')
     plt.plot(history.history['val_loss'], 'b', label='validation loss')
     plt.axvline(x=best_epoch, color='r', label='best_epoch')
@@ -147,19 +142,17 @@ def main():
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
-    # plt.savefig('/content/drive/MyDrive/NLP/Bert_' + dataset + '/figures/bert' + dataset + '_loss.png')
+    plt.savefig(figure_path + dataset + 'Loss.png')
     plt.show()
 
-    # epochs = range(1, num_epochs+1)
     plt.plot(history.history['precision'], 'g', label='Training precision')
     plt.plot(history.history['val_precision'], 'b', label='validation precision')
     plt.axvline(x=best_epoch, color='r', label='best_epoch')
     plt.title('Training and Validation precision')
     plt.xlabel('Epochs')
-    plt.ylabel('Loss')
+    plt.ylabel('precision')
     plt.legend()
-    # plt.savefig('/content/drive/MyDrive/NLP/Bert_' + dataset + '/figures/bert' + dataset + '_precision.png')
-    # plt.savefig('../Bert/Data/bert_precision.png')
+    plt.savefig(figure_path + dataset + 'precision.png')
     plt.show()
 
     plt.plot(history.history['accuracy'], 'g', label='Training accuracy')
@@ -167,10 +160,9 @@ def main():
     plt.axvline(x=best_epoch, color='r', label='best_epoch')
     plt.title('Training and Validation accuracy')
     plt.xlabel('Epochs')
-    plt.ylabel('Loss')
+    plt.ylabel('accuracy')
     plt.legend()
-    # plt.savefig('/content/drive/MyDrive/NLP/Bert_' + dataset + '/figures/bert' + dataset + '_accuracy.png')
-    # plt.savefig('../Bert/Data/bert_accuracy.png')
+    plt.savefig(figure_path + dataset + 'accuracy.png')
     plt.show()
 
     # printing classification report

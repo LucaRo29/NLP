@@ -11,7 +11,7 @@ from sklearn.metrics import confusion_matrix
 from matplotlib import pyplot as plt
 
 ## Paths
-data_path = "raw/spam.csv"
+data_path = "../Data/raw/spam.csv"
 data_path2 = "../Data/enron_spam_data.csv"
 
 from string import punctuation

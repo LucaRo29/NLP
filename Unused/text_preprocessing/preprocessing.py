@@ -1,8 +1,6 @@
 import re
-from bs4 import BeautifulSoup
 from num2words import num2words
 from spellchecker import SpellChecker
-from autocorrect import Speller
 from nltk import word_tokenize
 import unidecode
 from nltk.stem import PorterStemmer
@@ -15,9 +13,6 @@ import spacy
 import gensim
 from collections import Counter
 from contraction import CONTRACTION_MAP
-from progress.bar import Bar
-
-
 
 spell_corrector = SpellChecker()
 # expending contractions
@@ -150,8 +145,8 @@ class Preprocess:
 		Output :- string
 		"""
         #TODO: solve issues with these imports
-        from text_preprocessing.text_preprocessing_techniques import chat_words_list
-        from text_preprocessing.text_preprocessing_techniques import chat_words_map_dict
+        from Unused.text_preprocessing.text_preprocessing_techniques import chat_words_list
+        from Unused.text_preprocessing.text_preprocessing_techniques import chat_words_map_dict
 
         new_text = []
         for w in text.split():
