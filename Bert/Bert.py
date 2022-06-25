@@ -10,8 +10,6 @@ import numpy as np
 import seaborn as sns
 
 
-# from tf.keras.callbacks import EarlyStopping
-# import keras
 
 def main():
     # df = pd.read_csv('../Data/Cleaned/enron_cleaned.csv', index_col=False)
@@ -105,7 +103,7 @@ def main():
     history = model.fit(X_train, y_train, epochs=num_epochs, validation_data=(X_val, y_val), batch_size=50,
                         callbacks=[es], shuffle=True)
 
-    model.save('../Bert_SMS/Model/')
+    model.save('Bert_SMS/Model')
 
     score = model.evaluate(X_test, y_test)
     print('Score: ', score)
@@ -126,7 +124,7 @@ def main():
     # creating a graph out of confusion matrix
     cm = confusion_matrix(y_test, y_pred)
 
-    figure_path = '../Bert_SMS/figures/'
+    figure_path = 'Bert_SMS/figures/'
     dataset = 'SMS_'
     # creating a graph out of confusion matrix
     sns.heatmap(cm, annot=True, fmt='d')
