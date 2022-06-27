@@ -14,7 +14,7 @@ import seaborn as sns
 def main():
     # df = pd.read_csv('../Data/Cleaned/enron_cleaned.csv', index_col=False)
     df = pd.read_csv('../Data/Cleaned/spam_cleaned.csv', index_col=False)
-    # df = pd.read_csv('../Data/preprocessed/merged_cleaned_preprocessed.csv', index_col=False)
+    # df = pd.read_csv('../Data/preprocessed/merged_preprocessed.csv', index_col=False)
 
     new_model = True
     downsample = False
